@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load user_filters %}
+{% block title %} {{ group.title }} {% endblock %} 
+{% block content %}
+  <div class="container py-5">
+    <h1> {{ group.title }} </h1>
+    <p> {{ group.description }} </p>
+    <article>
+      {% for post in page_obj %}
+      {% thumbnail post.image "604x250" crop="center" upscale=True as im %}
+        <img class="card-img my-2" src="{{ im.url }}">        
+      {% endthumbnail %}
+        <ul>
+          <li>
+            Автор: {{ post.author.get_full_name }}
+            <a href="{% url 'posts:profile' post.author %}"> все посты пользователя </a>
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          </li>
+        </ul>
+        <p> {{ post.text|linebreaksbr }} </p>
+        <article>
+          <a href="{% url 'posts:post_detail' post.pk %}">подробная информация</a>
+        </article>
+        {% if post.group %}
+          <a href="{% url 'posts:group_posts' post.group.slug %}">все записи группы</a>
+        {% endif %}
+        {% if not forloop.last %}<hr>{% endif %}
+      {% endfor %}
+      {% include 'includes/paginator.html' %}
+    </article>
+  </div>
+{% endblock content %}
